@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BloxWish - Le Vrai Roblox Discount</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to right, #ff00cc, #3333ff);
+      font-family: Comic Sans MS, cursive, sans-serif;
+      color: white;
+      text-align: center;
+    }
+    header {
+      background-color: #000;
+      padding: 20px;
+      font-size: 2em;
+    }
+    .avatar-chooser img {
+      width: 100px;
+      margin: 10px;
+      cursor: pointer;
+      border: 3px solid transparent;
+    }
+    .avatar-chooser img.selected {
+      border: 3px dashed yellow;
+    }
+    #gameCanvas {
+      margin-top: 20px;
+      border: 5px solid white;
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+  <header>BloxWish</header>
+  <p>Bienvenue sur la meilleure copie de Roblox jamais vue.</p>
+  <h2>Choisis ton skin :</h2>
+  <div class="avatar-chooser">
+    <img src="https://via.placeholder.com/100x100/ff0000/ffffff?text=Skin1" onclick="selectAvatar(0)" />
+    <img src="https://via.placeholder.com/100x100/00ff00/ffffff?text=Skin2" onclick="selectAvatar(1)" />
+    <img src="https://via.placeholder.com/100x100/0000ff/ffffff?text=Skin3" onclick="selectAvatar(2)" />
+  </div>
+
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+  <audio id="bgMusic" autoplay loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let avatar = { x: 200, y: 200, size: 30, color: "white" };
+    let keys = {};
+    let enemies = [
+      { x: 50, y: 0, speed: 2 },
+      { x: 300, y: -100, speed: 3 },
+    ];
+
+    document.addEventListener("keydown", e => keys[e.key] = true);
+    document.addEventListener("keyup", e => keys[e.key] = false);
+
+    function selectAvatar(index) {
+      document.querySelectorAll('.avatar-chooser img').forEach((img, i) => {
+        img.classList.toggle('selected', i === index);
+      });
+      avatar.color = ["red", "lime", "blue"][index];
+    }
+
+    function drawAvatar() {
+      ctx.fillStyle = avatar.color;
+      ctx.fillRect(avatar.x, avatar.y, avatar.size, avatar.size);
+    }
+
+    function drawEnemies() {
+      ctx.fillStyle = "red";
+      enemies.forEach(e => {
+        ctx.fillRect(e.x, e.y, 30, 30);
+        e.y += e.speed;
+        if (e.y > canvas.height) e.y = -30;
+      });
+    }
+
+    function checkCollision() {
+      for (let e of enemies) {
+        if (
+          avatar.x < e.x + 30 &&
+          avatar.x + avatar.size > e.x &&
+          avatar.y < e.y + 30 &&
+          avatar.y + avatar.size > e.y
+        ) {
+          alert("T'as perdu, bouffon !");
+          e.y = -30;
+        }
+      }
+    }
+
+    function update() {
+      if (keys["ArrowLeft"]) avatar.x -= 4;
+      if (keys["ArrowRight"]) avatar.x += 4;
+      if (keys["ArrowUp"]) avatar.y -= 4;
+      if (keys["ArrowDown"]) avatar.y += 4;
+
+      avatar.x = Math.max(0, Math.min(canvas.width - avatar.size, avatar.x));
+      avatar.y = Math.max(0, Math.min(canvas.height - avatar.size, avatar.y));
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawAvatar();
+      drawEnemies();
+      checkCollision();
+      update();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
